@@ -1,0 +1,43 @@
+{
+  "variables": {
+    "Name": "centos-6.9-base",
+    "LaunchPermissions": "552172703831",
+    "ChefServerVersion": "12.16.9",
+    "ChefServerPKG": "chef-server-core-12.16.9-1.el6.x86_64.rpm"  
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "us-west-2",
+    "source_ami_filter": {
+      "filters": {
+      "virtualization-type": "hvm",
+      "name": "*Maduro_CentOS6.9_BASE*",
+      "root-device-type": "ebs"
+      },
+      "owners": [ "{{user `LaunchPermissions`}}" ],
+      "most_recent": true
+    },
+    "instance_type": "t2.micro",
+    "ssh_username": "centos",
+    "ami_name": "packer-centos6.9-base {{timestamp}}",
+  
+    "ami_users": [ "{{user `LaunchPermissions`}}" ],
+    "tags": {
+      "Name": "{{user `Name`}}"
+    }
+  }],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "sudo yum -y update", 
+        "sudo yum -y upgrade", 
+        "sudo wget -P /tmp https://packages.chef.io/files/current/chef-server/{{user `ChefServerVersion`}}/el/6/chef-server-core-{{user `ChefServerVersion`}}-1.el6.x86_64.rpm",
+        "sudo rpm -Uvh /tmp/chef-server-core-{{user `ChefServerVersion`}}-1.el6.x86_64.rpm",
+        "sudo iptables -I INPUT -j ACCEPT"
+      ]
+    }
+  ]
+}
