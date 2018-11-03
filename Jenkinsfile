@@ -3,7 +3,8 @@ pipeline {
   stages {
     stage('test') {
       steps {
-        sh 'echo \'hello world\''
+        sh 'python --version'
+        sh 'ruby --version'
       }
     }
   }
